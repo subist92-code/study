@@ -250,7 +250,7 @@ export default function AiTutor() {
     )
   }
 
-  const userName = userInfo.name || '학생'
+  const userName = userInfo?.name || '학생'
   const sajuGroup = saju.sipseongGroup
   const mbtiCode = mbti
   const vakType = vak ?? 'V'
@@ -359,7 +359,7 @@ export default function AiTutor() {
         } as Parameters<typeof client.messages.create>[0],
       )
 
-      const answer = (response.content[0] as { type: string; text: string }).text
+      const answer = ((response as { content: Array<{ type: string; text: string }> }).content[0]).text
       setMessages([...newMessages, { role: 'assistant', content: answer }])
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.'
@@ -396,7 +396,7 @@ export default function AiTutor() {
         messages: newMessages.map(toApiMessage),
       })
 
-      const answer = (response.content[0] as { type: string; text: string }).text
+      const answer = ((response as { content: Array<{ type: string; text: string }> }).content[0]).text
       setMessages([...newMessages, { role: 'assistant', content: answer }])
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.'
@@ -473,7 +473,7 @@ export default function AiTutor() {
             apiKey={apiKey}
             systemPrompt={buildSystemPrompt(userName, sajuGroup, mbtiCode, vakType)}
             userName={userName}
-            grade={userInfo.grade}
+            grade={userInfo?.grade}
             onClose={() => setReadingMode(false)}
             onRestart={() => setReadingKey((k) => k + 1)}
           />

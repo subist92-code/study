@@ -1,6 +1,6 @@
 import type { Element } from '@/types'
 import { ohangData, type OhangKey } from '@/data/ohangData'
-import { calcPersona, type TenGodGroup, type PersonaResult } from '@/utils/personaCalculator'
+import { calcPersona, type PersonaResult } from '@/utils/personaCalculator'
 
 // ── 천간 (十天干) ──
 const HEAVENLY_STEMS = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'] as const

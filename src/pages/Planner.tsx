@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useUserStore } from '@/store/userStore'
-import type { OhangKey } from '@/data/ohangData'
 import type { ReadingSession } from '@/store/readingStore'
 import { useReadingStore, todayStr, getISOWeekKey as readingWeekKey, fmtSec } from '@/store/readingStore'
 import { ALL_UNIVERSITIES, filterUniversities } from '@/data/admission'
@@ -184,7 +183,7 @@ export default function Planner() {
           {ohang.emoji} {ohang.name} 유형
         </p>
         <h1 className="text-2xl font-bold text-gray-900">
-          {userInfo.name ? `${userInfo.name}님의 ` : ''}주간 플래너
+          {userInfo?.name ? `${userInfo.name}님의 ` : ''}주간 플래너
         </h1>
       </div>
 

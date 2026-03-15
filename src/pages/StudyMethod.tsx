@@ -5,10 +5,6 @@ import { ohangData } from '@/data/ohangData'
 import { ELEMENT_INFO } from '@/utils/sajuCalculator'
 import { learningMethods, matchingMatrix, getTemperament } from '@/data/studyMethodData'
 
-const DAY_KR: Record<string, string> = {
-  mon: '월', tue: '화', wed: '수', thu: '목', fri: '금', sat: '토', sun: '일',
-}
-
 export default function StudyMethod() {
   const navigate = useNavigate()
   const { saju, userInfo, mbti } = useUserStore()
@@ -52,7 +48,7 @@ export default function StudyMethod() {
           학습법 매칭
         </span>
         <h2 className="text-2xl font-bold text-indigo-900">
-          {userInfo.name ? `${userInfo.name}님의 ` : ''}{data.name} 학습 전략
+          {userInfo?.name ? `${userInfo.name}님의 ` : ''}{data.name} 학습 전략
         </h2>
       </div>
 

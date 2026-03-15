@@ -58,7 +58,7 @@ export default function WeeklyPlanner() {
           주간 플래너
         </span>
         <h2 className="text-2xl font-bold text-indigo-900">
-          {userInfo.name ? `${userInfo.name}님의 ` : ''}{data.name} 주간 루틴
+          {userInfo?.name ? `${userInfo.name}님의 ` : ''}{data.name} 주간 루틴
         </h2>
         <p className="text-sm text-gray-400">{data.emoji} {data.name} 유형 맞춤 주간 학습 계획</p>
       </div>

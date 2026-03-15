@@ -398,7 +398,7 @@ function buildComment(
 export function getMedicalRegionalOptions(
   studentRegion: string,
   naesinGrade: number,
-  suneungGrades?: Partial<Record<string, number>>
+  _suneungGrades?: Partial<Record<string, number>>
 ): Array<{ university: string; dept: string; eligible: boolean; note: string }> {
   const medicalRegionals = [
     { univ: '부산대', id: 'pnu', regions: ['부산','울산','경남'], cut: 1.3, suneungDesc: '수학포함 3합 4' },

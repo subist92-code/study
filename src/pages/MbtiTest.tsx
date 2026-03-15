@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MBTI_QUESTIONS, calcMbtiScore, TEMPERAMENT_ADMISSION } from '@/utils/mbtiCalculator'
+import { MBTI_QUESTIONS, calcMbtiScore } from '@/utils/mbtiCalculator'
 import type { AxisChoice, Answers, MbtiCalculationResult, AxisScore, AxisKey } from '@/utils/mbtiCalculator'
-import { mbtiTypes, mbtiCategories, getMbtiCategory } from '@/data/mbtiData'
+import { mbtiTypes, getMbtiCategory } from '@/data/mbtiData'
 import { useUserStore } from '@/store/userStore'
 import type { MbtiType, VakType } from '@/types'
 
@@ -111,7 +111,7 @@ export default function MbtiTest() {
   const [step, setStep]           = useState<Step>('intro')
   const [current, setCurrent]     = useState(0)
   const [answers, setAnswers]     = useState<Answers>({})
-  const [result, setResult]       = useState<MbtiCalculationResult | null>(null)
+  const [_result, setResult]       = useState<MbtiCalculationResult | null>(null)
   const [vakCurrent, setVakCurrent]   = useState(0)
   const [vakAnswers, setVakAnswers]   = useState<(VakType | null)[]>([null, null, null])
 
@@ -140,15 +140,6 @@ export default function MbtiTest() {
 
   function handleBack() {
     if (current > 0) setCurrent(current - 1)
-  }
-
-  function handleReset() {
-    setStep('intro')
-    setCurrent(0)
-    setAnswers({})
-    setResult(null)
-    setVakCurrent(0)
-    setVakAnswers([null, null, null])
   }
 
   function handleVakAnswer(type: VakType) {
@@ -374,143 +365,6 @@ export default function MbtiTest() {
 }
 
 // ─────────────────────────────────────────────
-// 결과 페이지
-// ─────────────────────────────────────────────
-function ResultPage({
-  result,
-  onReset,
-  onNext,
-}: {
-  result: MbtiCalculationResult
-  onReset: () => void
-  onNext: () => void
-}) {
-  const { code, temperament, axes } = result
-  const profile   = mbtiTypes[code]
-  const category  = mbtiCategories[temperament]
-  const admission = TEMPERAMENT_ADMISSION[temperament]
-
-  return (
-    <div className="max-w-lg mx-auto py-8 space-y-4">
-      {/* 완료 배지 */}
-      <div className="text-center space-y-1">
-        <span className="inline-block bg-indigo-700 text-white text-xs font-bold px-4 py-1 rounded-full tracking-widest">
-          MBTI 분석 완료
-        </span>
-        <h2 className="text-2xl font-bold text-indigo-900">
-          당신의 유형은{' '}
-          <span style={{ color: profile.color }}>{code}</span>
-        </h2>
-        <p className="text-sm text-gray-400">{category.emoji} {category.name} 그룹</p>
-      </div>
-
-      {/* 히어로 카드 */}
-      <div
-        className="rounded-2xl p-6 text-white relative overflow-hidden"
-        style={{ background: `linear-gradient(135deg, ${profile.color} 0%, ${profile.color}cc 100%)` }}
-      >
-        <div className="absolute right-4 top-4 text-6xl opacity-15 select-none">{profile.emoji}</div>
-        <div className="text-4xl mb-2">{profile.emoji}</div>
-        <p className="text-xs font-bold opacity-70 mb-1 tracking-widest uppercase">{profile.nickname}</p>
-        <p className="text-xl font-bold mb-2">{profile.name}</p>
-        <p className="text-sm opacity-90 leading-relaxed">{profile.description}</p>
-      </div>
-
-      {/* 축별 강도 */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <h3 className="text-sm font-bold text-indigo-900 mb-4 flex items-center gap-2">
-          <span>📊</span> 유형 강도
-        </h3>
-        <div className="space-y-4">
-          {(['EI', 'SN', 'TF', 'JP'] as AxisKey[]).map((axis) => (
-            <AxisBar key={axis} score={axes[axis]} color={profile.color} />
-          ))}
-        </div>
-      </div>
-
-      {/* 공부 강점 */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <h3 className="text-sm font-bold text-indigo-900 mb-3 flex items-center gap-2">
-          <span>💪</span> 공부 강점
-        </h3>
-        <ul className="space-y-2">
-          {profile.studyStrengths.map((s, i) => (
-            <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-              <span className="w-1.5 h-1.5 rounded-full bg-green-400 mt-1.5 flex-shrink-0" />
-              {s}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* 주의할 점 */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <h3 className="text-sm font-bold text-indigo-900 mb-3 flex items-center gap-2">
-          <span>⚠️</span> 주의할 점
-        </h3>
-        <ul className="space-y-2">
-          {profile.studyWeaknesses.map((w, i) => (
-            <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-              <span className="w-1.5 h-1.5 rounded-full bg-orange-400 mt-1.5 flex-shrink-0" />
-              {w}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* 팁 + 환경 */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
-        <h3 className="text-sm font-bold text-indigo-900 flex items-center gap-2">
-          <span>💡</span> 오늘의 학습 팁
-        </h3>
-        <p className="text-sm text-gray-700 leading-relaxed bg-indigo-50 rounded-xl px-4 py-3">
-          {profile.studyTip}
-        </p>
-        <div className="text-xs text-gray-500 space-y-1.5">
-          <p><span className="font-semibold text-green-600">최적 환경:</span> {profile.bestEnvironment}</p>
-          <p><span className="font-semibold text-orange-500">피할 환경:</span> {profile.worstEnvironment}</p>
-        </div>
-      </div>
-
-      {/* 입시 전형 추천 */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <h3 className="text-sm font-bold text-indigo-900 mb-3 flex items-center gap-2">
-          <span>🎓</span> 입시 전형 추천
-        </h3>
-        <div className="flex flex-wrap gap-2">
-          {admission.map((fit) => (
-            <span
-              key={fit}
-              className="text-xs font-semibold px-3 py-1.5 rounded-full"
-              style={{ backgroundColor: `${profile.color}18`, color: profile.color }}
-            >
-              {fit}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* 버튼 */}
-      <div className="space-y-2 pt-2">
-        <button
-          onClick={onNext}
-          className="w-full text-white font-bold py-3.5 rounded-xl transition-opacity hover:opacity-90"
-          style={{ backgroundColor: profile.color }}
-        >
-          다음 단계: 종합 리포트 →
-        </button>
-        <button
-          onClick={onReset}
-          className="w-full border border-gray-200 text-gray-500 hover:bg-gray-50 py-3 rounded-xl text-sm transition-colors"
-        >
-          ↩ 다시 검사하기
-        </button>
-      </div>
-    </div>
-  )
-}
-
-// ─────────────────────────────────────────────
 // 서브 컴포넌트
 // ─────────────────────────────────────────────
 function OptionButton({
@@ -536,32 +390,3 @@ function OptionButton({
   )
 }
 
-function AxisBar({ score, color }: { score: AxisScore; color: string }) {
-  const isDominantA = score.dominant === score.aLetter
-
-  return (
-    <div className="space-y-1.5">
-      <div className="flex justify-between text-xs font-medium">
-        <span className={isDominantA ? 'text-gray-800 font-bold' : 'text-gray-400'}>
-          {score.aLetter} {score.aLabel}
-        </span>
-        <span className={!isDominantA ? 'text-gray-800 font-bold' : 'text-gray-400'}>
-          {score.bLabel} {score.bLetter}
-        </span>
-      </div>
-      <div className="relative h-2.5 bg-gray-100 rounded-full overflow-hidden">
-        <motion.div
-          className="absolute left-0 top-0 h-full rounded-full"
-          style={{ backgroundColor: color }}
-          initial={{ width: 0 }}
-          animate={{ width: `${score.aPct}%` }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-        />
-      </div>
-      <div className="flex justify-between text-xs text-gray-400">
-        <span className={isDominantA ? 'font-bold text-gray-600' : ''}>{score.aPct}%</span>
-        <span className={!isDominantA ? 'font-bold text-gray-600' : ''}>{score.bPct}%</span>
-      </div>
-    </div>
-  )
-}
